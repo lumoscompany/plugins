@@ -1,5 +1,5 @@
 {
-  "name": "tron-chainplugin",
+  "name": "thelumoscompany-tron",
   "version": "0.1.0",
   "description": "",
   "scripts": {
@@ -15,8 +15,7 @@
     "@lumoscompany/chainplugin": "github:lumoscompany/chainplugin",
     "axios": "^1.3.6",
     "bn.js": "^5.2.1",
-    "patch-package": "^6.5.1",
-    "tronweb": "github:lumoscompany/tronweb#lumoscompany"
+    "ethers": "^6.6.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.59.7",

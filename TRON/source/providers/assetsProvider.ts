@@ -1,4 +1,5 @@
 import {
+  Environment,
   AssetsProvider as IAssetsProvider,
   FetchAssetsRequest,
   ComplementaryField,
@@ -8,6 +9,12 @@ import {
 import { tronscan, imageWithAsset } from '../services';
 
 class AssetsProvider implements IAssetsProvider {
+  environment: Environment;
+
+  constructor(environment: Environment) {
+    this.environment = environment;
+  }
+
   async fetch(args: FetchAssetsRequest): Promise<Asset[]> {
     const assets = await tronscan.getAssets({ address: args.address, asset_type: 1 });
     return assets.data.map(asset => {
@@ -20,8 +27,8 @@ class AssetsProvider implements IAssetsProvider {
         name = asset.token_abbr.toUpperCase();
       }
 
-      const token_value_in_usd = parseFloat(asset.token_value_in_usd);
-      const token_price_in_usd = parseFloat(asset.token_price_in_usd);
+      const token_value_in_usd = parseFloat(asset.token_value_in_usd) || 0;
+      const token_price_in_usd = parseFloat(asset.token_price_in_usd) || 0;
 
       const fields: ComplementaryField[] = [];
       if (token_price_in_usd > 0) {
@@ -38,6 +45,7 @@ class AssetsProvider implements IAssetsProvider {
         name: name,
         icon: imageWithAsset(asset),
         quantity: asset.balance,
+        decimals: asset.token_decimal,
         address: address,
         type: 'fungible',
         malicious: level > 2,

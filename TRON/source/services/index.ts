@@ -1,3 +1,3 @@
 export * from './tronscan';
-export * from './bn';
+export * from './trongrid';
 export * from './utilites';

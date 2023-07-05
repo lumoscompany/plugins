@@ -7,6 +7,7 @@ import {
   EventsProviderUpdateRequest,
   EventsProviderFetchRequest,
   Image,
+  Environment,
 } from '@lumoscompany/chainplugin';
 
 import { tronscan, bn, imageWithTokenInfo } from '../services';
@@ -116,6 +117,12 @@ const parseTRC10Transfer = (
 };
 
 class EventsProvider implements IEventsProvider {
+  environment: Environment;
+
+  constructor(environment: Environment) {
+    this.environment = environment;
+  }
+
   async update(args: EventsProviderUpdateRequest): Promise<Event> {
     const response = await tronscan.getTransaction({ hash: args.event.hash });
     const fee = bn(`${response.cost.energy_fee}`, 6);
@@ -183,6 +190,7 @@ class EventsProvider implements IEventsProvider {
         date: transfer.timestamp / 1000,
         hash: transfer.transactionHash,
         malicious: transfer.tokenInfo.tokenCanShow > 2,
+        asset: transfer.tokenInfo.tokenId,
         incomplete: true,
         type: parsed[1],
         preview: parsed[0],
@@ -195,6 +203,7 @@ class EventsProvider implements IEventsProvider {
         date: transfer.block_ts / 1000,
         hash: transfer.transaction_id,
         malicious: transfer.tokenInfo.tokenCanShow > 2,
+        asset: transfer.contract_address,
         incomplete: true,
         type: parsed[1],
         preview: parsed[0],

@@ -1,16 +1,34 @@
-import chainplugin from '@lumoscompany/chainplugin';
-import { NotificationsProvider, EventsProvider, AssetsProvider } from './providers';
+import chainplugin, { Chainplugin as IChainplugin, Environment } from '@lumoscompany/chainplugin';
+import { EventsProvider, AssetsProvider, MessagesProvider } from './providers';
 
-export default chainplugin({
-  assets: async function () {
-    return new AssetsProvider();
-  },
+class TRON implements IChainplugin {
+  environment: Environment;
 
-  events: async function () {
-    return new EventsProvider();
-  },
+  private _assets: AssetsProvider;
+  private _events: EventsProvider;
+  private _messages: MessagesProvider;
 
-  notifications: async function (args) {
-    return new NotificationsProvider(args);
-  },
-});
+  constructor(environment: Environment) {
+    globalThis.testnet = environment.testnet;
+
+    this.environment = environment;
+
+    this._assets = new AssetsProvider(environment);
+    this._events = new EventsProvider(environment);
+    this._messages = new MessagesProvider(environment);
+  }
+
+  async assets() {
+    return this._assets;
+  }
+
+  async events() {
+    return this._events;
+  }
+
+  async messages() {
+    return this._messages;
+  }
+}
+
+export default chainplugin(TRON);

@@ -1,15 +1,23 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import axios from 'axios';
+import { defaults } from './utilites';
 
-const defaults = <T extends object>(relaxed: T, defaults: Required<T>): Required<T> => {
-  const _defaults = defaults;
-  Object.assign(_defaults, relaxed);
-  return _defaults;
+const get = async <T>(path: string, data: any): Promise<T> => {
+  let endpoint: string;
+  if (testnet) {
+    endpoint = `https://shastapi.tronscan.org/api/${path}`;
+  } else {
+    endpoint = `https://apilist.tronscanapi.com/api/${path}`;
+  }
+
+  const response = await axios.get<T>(endpoint, { params: data });
+  return response.data;
 };
 
 namespace tronscan {
   export type TokenInfo = {
+    tokenId: string;
     tokenDecimal: number;
     tokenAbbr: string;
     tokenLogo?: string;
@@ -48,22 +56,19 @@ namespace tronscan {
   export const getTRC10Transfers = async (
     args: GetTRC10TransfersRequest
   ): Promise<GetTRC10TransfersResponse> => {
-    const parameters = defaults(args, {
-      address: '',
-      sort: '-timestamp',
-      count: true,
-      limit: 50,
-      start: 0,
-      filterTokenValue: 0,
-      start_timestamp: 0,
-      end_timestamp: 0,
-    });
-
-    return (
-      await axios.get<GetTRC10TransfersResponse>('https://apilist.tronscanapi.com/api/transfer', {
-        params: parameters,
+    return get<GetTRC10TransfersResponse>(
+      'transfer',
+      defaults(args, {
+        address: '',
+        sort: '-timestamp',
+        count: true,
+        limit: 50,
+        start: 0,
+        filterTokenValue: 0,
+        start_timestamp: 0,
+        end_timestamp: 0,
       })
-    ).data;
+    );
   };
 }
 
@@ -110,23 +115,19 @@ namespace tronscan {
   export const getTRC20TRC721Transfers = async (
     args: GetTRC20TRC721TransfersRequest
   ): Promise<GetTRC20TRC721TransfersResponse> => {
-    const parameters = defaults(args, {
-      relatedAddress: '',
-      sort: '-timestamp',
-      count: true,
-      limit: 50,
-      start: 0,
-      filterTokenValue: 0,
-      start_timestamp: 0,
-      end_timestamp: 0,
-    });
-
-    return (
-      await axios.get<GetTRC20TRC721TransfersResponse>(
-        'https://apilist.tronscanapi.com/api/token_trc20/transfers',
-        { params: parameters }
-      )
-    ).data;
+    return get<GetTRC20TRC721TransfersResponse>(
+      'token_trc20/transfers',
+      defaults(args, {
+        relatedAddress: '',
+        sort: '-timestamp',
+        count: true,
+        limit: 50,
+        start: 0,
+        filterTokenValue: 0,
+        start_timestamp: 0,
+        end_timestamp: 0,
+      })
+    );
   };
 }
 
@@ -176,11 +177,7 @@ namespace tronscan {
   };
 
   export const getTransaction = async (args: TransactionRequest): Promise<TransactionResponse> => {
-    return (
-      await axios.get<TransactionResponse>('https://apilist.tronscanapi.com/api/transaction-info', {
-        params: args,
-      })
-    ).data;
+    return get<TransactionResponse>('transaction-info', args);
   };
 }
 
@@ -221,11 +218,7 @@ namespace tronscan {
   };
 
   export const getAssets = async (args: GetAssetsRequest): Promise<GetAssetsResponse> => {
-    return (
-      await axios.get<GetAssetsResponse>('https://apilist.tronscanapi.com/api/account/wallet', {
-        params: args,
-      })
-    ).data;
+    return get<GetAssetsResponse>('account/wallet', args);
   };
 }
 

@@ -1,6 +1,7 @@
 {
+  "identifier": "com.lumoscompany.plugin.tron",
   "version": "0.1.0",
-  "name": "tlc-tron",
+  "name": "TRON Plugin from The Lumos Company",
   "chain": {
     "name": "TRON",
     "icon": {
