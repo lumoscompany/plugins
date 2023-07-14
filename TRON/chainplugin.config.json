@@ -1,7 +1,8 @@
 {
   "identifier": "com.lumoscompany.plugin.tron",
   "version": "0.1.0",
-  "name": "TRON Plugin from The Lumos Company",
+  "name": "TRON Plugin",
+  "author": "The Lumos Company",
   "chain": {
     "name": "TRON",
     "icon": {
