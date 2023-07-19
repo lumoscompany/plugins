@@ -255,6 +255,39 @@ namespace trongrid {
   };
 }
 
+namespace trongrid {
+  /**
+   *
+   * @returns 1 energy cost in TRX (SUN)
+   */
+  export const getEnergyPrice = async (): Promise<number> => {
+    const _default = 420;
+
+    const result = await get<{ prices?: string }>('wallet/getenergyprices', {});
+    if (!result.prices) {
+      return _default;
+    }
+
+    const elements = result.prices.split(',');
+    if (elements.length == 0) {
+      return _default;
+    } else {
+      const last = elements[elements.length - 1];
+      const data = last.split(':');
+      if (data.length != 2) {
+        return _default;
+      } else {
+        const value = parseInt(data[1]);
+        if (value) {
+          return value;
+        } else {
+          return _default;
+        }
+      }
+    }
+  };
+}
+
 export { trongrid };
 
 /* eslint-enable @typescript-eslint/no-namespace */
