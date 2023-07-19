@@ -14,15 +14,27 @@ const base58AddressToHEX = (base58: string): string => {
     .toLowerCase();
 };
 
-const post = async <T extends Object>(path: string, data: any): Promise<T> => {
+const _endpoint = (path: string): string => {
   let endpoint: string;
   if (testnet) {
     endpoint = `https://api.shasta.trongrid.io/${path}`;
   } else {
     endpoint = `https://api.trongrid.io/${path}`;
   }
+  return endpoint;
+};
 
-  const response = await axios.post<T>(endpoint, data);
+const get = async <T extends Object>(path: string, data: any): Promise<T> => {
+  const response = await axios.get<T>(_endpoint(path), data);
+  if ('Error' in response.data && typeof response.data.Error === 'string') {
+    throw new Error(response.data.Error);
+  } else {
+    return response.data;
+  }
+};
+
+const post = async <T extends Object>(path: string, data: any): Promise<T> => {
+  const response = await axios.post<T>(_endpoint(path), data);
   if ('Error' in response.data && typeof response.data.Error === 'string') {
     throw new Error(response.data.Error);
   } else {
@@ -194,9 +206,18 @@ namespace trongrid {
     visible?: boolean;
   };
 
+  type EstimatedFeesResponse = {
+    result: {
+      result: boolean;
+    };
+
+    energy_used: number; // int64, SUN
+    energy_penalty?: number; // int64, SUN
+  };
+
   export const createContractTransaction = async (
     args: CreateContractTransactionRequest
-  ): Promise<Transaction> => {
+  ): Promise<[Transaction, number]> => {
     const parameters = abi
       .encode(['address', 'uint256'], [base58AddressToHEX(args.to_address), args.amount.toString()])
       .slice(2); // Remove `0x` prefix
@@ -214,11 +235,30 @@ namespace trongrid {
       defaults(updated, { call_value: 0, visible: true })
     );
 
+    let transaction: Transaction;
     if (result.transaction) {
-      return result.transaction;
+      transaction = result.transaction;
     } else {
       throw new Error("Can't build TRX-20 transaction");
     }
+
+    const fees = await post<EstimatedFeesResponse>(
+      'wallet/triggerconstantcontract',
+      defaults(updated, { call_value: 0, visible: true })
+    );
+
+    let _fees = 0;
+    if (fees.result.result) {
+      let energy = fees.energy_used;
+      if (fees.energy_penalty && fees.energy_penalty > energy) {
+        energy -= fees.energy_penalty;
+      }
+
+      const cost = await getEnergyPrice();
+      _fees = energy * cost;
+    }
+
+    return [transaction, _fees];
   };
 }
 

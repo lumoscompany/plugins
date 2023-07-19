@@ -7,7 +7,9 @@ import {
   PluginError,
   Environment,
 } from '@lumoscompany/chainplugin';
+
 import { trongrid } from '../services/index';
+import { bn } from '../services/index';
 
 type BakedTransaction = {
   transaction: trongrid.Transaction;
@@ -32,6 +34,8 @@ class MessagesProvider implements IMessagesProvider {
     const transfer = args.message.transfer;
 
     let transaction: trongrid.Transaction;
+    let estimatedFees: string = '0';
+
     if (transfer.asset === '_') {
       transaction = await trongrid.createTRXTransaction({
         owner_address: transfer.sender,
@@ -39,13 +43,16 @@ class MessagesProvider implements IMessagesProvider {
         amount: parseInt(transfer.amount),
       });
     } else if (trongrid.isTRONAddress(transfer.asset)) {
-      transaction = await trongrid.createContractTransaction({
+      const value = await trongrid.createContractTransaction({
         contract_address: transfer.asset,
         owner_address: transfer.sender,
         to_address: transfer.recipient,
         amount: BigInt(transfer.amount),
         fee_limit: 100_000_000,
       });
+
+      transaction = value[0];
+      estimatedFees = bn(value[1].toString(), 6);
     } else {
       transaction = await trongrid.createAssetTransaction({
         owner_address: transfer.sender,
@@ -57,7 +64,7 @@ class MessagesProvider implements IMessagesProvider {
 
     return {
       shouldSign: Buffer.from(transaction.txID, 'hex').toString('base64'),
-      estimatedFees: 0,
+      estimatedFees: estimatedFees,
       extraData: BakedTransactionBase64({
         transaction: transaction,
       }),
