@@ -16,7 +16,7 @@ class BrowserProvider implements IBrowserProvider {
   async url(args: BrowserURLRequest): Promise<BrowserURLResponse> {
     let endpoint: string;
     if (this.environment.testnet) {
-      endpoint = `https://shastapi.tronscan.org/#`;
+      endpoint = `https://shasta.tronscan.org/#`;
     } else {
       endpoint = `https://tronscan.org/#`;
     }
