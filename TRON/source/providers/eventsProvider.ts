@@ -4,8 +4,10 @@ import {
   Event,
   EventType,
   CurrencyTextFormattingOptions,
+  EventHash,
   EventsProviderUpdateRequest,
   EventsProviderFetchRequest,
+  EventsProviderStatusResponse,
   Image,
   Environment,
 } from '@lumoscompany/chainplugin';
@@ -129,14 +131,28 @@ class EventsProvider implements IEventsProvider {
 
     const _event = args.event;
     _event.incomplete = false;
-    _event.preview.complementary.push({
+
+    let complementary = Object.assign([], _event.preview.complementary);
+    complementary.push({
       name: 'Fees',
       text: {
         value: `${fee} TRX`,
       },
     });
 
+    _event.preview.complementary = complementary;
     return _event;
+  }
+
+  async status(args: EventHash): Promise<EventsProviderStatusResponse> {
+    const response = await tronscan.getTransaction({ hash: args.hash });
+    const status = response.result;
+    switch (status) {
+      case 'SUCCESS':
+        return { status: 'success' };
+      default:
+        return { status: 'failed' };
+    }
   }
 
   async fetch(args: EventsProviderFetchRequest): Promise<Event[]> {
@@ -189,6 +205,7 @@ class EventsProvider implements IEventsProvider {
       return {
         date: transfer.timestamp / 1000,
         hash: transfer.transactionHash,
+        status: 'success',
         malicious: transfer.tokenInfo.tokenCanShow > 2,
         asset: transfer.tokenInfo.tokenId,
         incomplete: true,
@@ -202,6 +219,7 @@ class EventsProvider implements IEventsProvider {
       return {
         date: transfer.block_ts / 1000,
         hash: transfer.transaction_id,
+        status: 'success',
         malicious: transfer.tokenInfo.tokenCanShow > 2,
         asset: transfer.contract_address,
         incomplete: true,
