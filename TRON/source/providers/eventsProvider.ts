@@ -146,7 +146,7 @@ class EventsProvider implements IEventsProvider {
 
   async status(args: EventHash): Promise<EventsProviderStatusResponse> {
     const response = await tronscan.getTransaction({ hash: args.hash });
-    const status = response.result;
+    const status = response.contractRet;
     switch (status) {
       case 'SUCCESS':
         return { status: 'success' };
