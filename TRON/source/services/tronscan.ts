@@ -137,7 +137,7 @@ namespace tronscan {
     hash: string; // hash
     ownerAddress: string;
     toAddress: string;
-    contractRet: string; // SUCCESS or error message
+    contractRet?: string; // SUCCESS or error message, undefined for pending
     confirmations: number;
     confirmed: boolean;
     timestamp: number;
