@@ -71,7 +71,7 @@ const parseTRC20TRC721Transfer = (
       complementary: [
         {
           name: _title,
-          text: { value: _address },
+          text: { value: _address, copyable: true },
         },
       ],
     },
@@ -110,7 +110,7 @@ const parseTRC10Transfer = (
       complementary: [
         {
           name: _title,
-          text: { value: _address },
+          text: { value: _address, copyable: true },
         },
       ],
     },
