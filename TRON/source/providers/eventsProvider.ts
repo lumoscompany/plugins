@@ -9,7 +9,6 @@ import {
   EventsProviderFetchRequest,
   EventsProviderStatusResponse,
   Image,
-  Environment,
 } from '@lumoscompany/chainplugin';
 
 import { tronscan, bn, imageWithTokenInfo } from '../services';
@@ -119,11 +118,7 @@ const parseTRC10Transfer = (
 };
 
 class EventsProvider implements IEventsProvider {
-  environment: Environment;
-
-  constructor(environment: Environment) {
-    this.environment = environment;
-  }
+  constructor() {}
 
   async update(args: EventsProviderUpdateRequest): Promise<Event> {
     const response = await tronscan.getTransaction({ hash: args.event.hash });

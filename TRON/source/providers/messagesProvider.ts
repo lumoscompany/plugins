@@ -5,7 +5,6 @@ import {
   SendMessageRequest,
   SendedMessageData,
   PluginError,
-  Environment,
 } from '@lumoscompany/chainplugin';
 
 import { trongrid } from '../services/index';
@@ -24,11 +23,7 @@ function BakedTransactionFromBase64(string: string): BakedTransaction {
 }
 
 class MessagesProvider implements IMessagesProvider {
-  environment: Environment;
-
-  constructor(environment: Environment) {
-    this.environment = environment;
-  }
+  constructor() {}
 
   async bake(args: BakeMessageRequest): Promise<BakedMessageData> {
     const transfer = args.message.transfer;

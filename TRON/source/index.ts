@@ -1,24 +1,13 @@
-import chainplugin, { Chainplugin as IChainplugin, Environment } from '@lumoscompany/chainplugin';
+import chainplugin, { Chainplugin as IChainplugin } from '@lumoscompany/chainplugin';
 import { EventsProvider, AssetsProvider, MessagesProvider, BrowserProvider } from './providers';
 
 class TRON implements IChainplugin {
-  environment: Environment;
+  private _assets = new AssetsProvider();
+  private _events = new EventsProvider();
+  private _messages = new MessagesProvider();
+  private _browser = new BrowserProvider();
 
-  private _assets: AssetsProvider;
-  private _events: EventsProvider;
-  private _messages: MessagesProvider;
-  private _browser: BrowserProvider;
-
-  constructor(environment: Environment) {
-    globalThis.testnet = environment.testnet;
-
-    this.environment = environment;
-
-    this._assets = new AssetsProvider(environment);
-    this._events = new EventsProvider(environment);
-    this._messages = new MessagesProvider(environment);
-    this._browser = new BrowserProvider(environment);
-  }
+  constructor() {}
 
   async browser() {
     return this._browser;

@@ -5,13 +5,20 @@ import { defaults } from './utilites';
 
 const get = async <T>(path: string, data: any): Promise<T> => {
   let endpoint: string;
-  if (testnet) {
+  if (globalEnvironment.isTestnetEnabled) {
     endpoint = `https://shastapi.tronscan.org/api/${path}`;
   } else {
     endpoint = `https://apilist.tronscanapi.com/api/${path}`;
   }
 
-  const response = await axios.get<T>(endpoint, { params: data });
+  const key = await globalEnvironment.readonlyKeyValueStrorage.value('tronscan_api_key');
+  const response = await axios.get<T>(endpoint, {
+    headers: {
+      'TRON-PRO-API-KEY': key ?? '',
+    },
+    params: data,
+  });
+
   return response.data;
 };
 

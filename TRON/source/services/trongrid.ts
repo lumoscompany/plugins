@@ -16,7 +16,7 @@ const base58AddressToHEX = (base58: string): string => {
 
 const _endpoint = (path: string): string => {
   let endpoint: string;
-  if (testnet) {
+  if (globalEnvironment.isTestnetEnabled) {
     endpoint = `https://api.shasta.trongrid.io/${path}`;
   } else {
     endpoint = `https://api.trongrid.io/${path}`;
@@ -24,8 +24,19 @@ const _endpoint = (path: string): string => {
   return endpoint;
 };
 
+const key = async (): Promise<string> => {
+  const key = await globalEnvironment.readonlyKeyValueStrorage.value('trongrid_api_key');
+  return key ?? '';
+};
+
 const get = async <T extends Object>(path: string, data: any): Promise<T> => {
-  const response = await axios.get<T>(_endpoint(path), data);
+  const response = await axios.get<T>(_endpoint(path), {
+    headers: {
+      'TRON-PRO-API-KEY': await key(),
+    },
+    params: data,
+  });
+
   if ('Error' in response.data && typeof response.data.Error === 'string') {
     throw new Error(response.data.Error);
   } else {
@@ -34,7 +45,12 @@ const get = async <T extends Object>(path: string, data: any): Promise<T> => {
 };
 
 const post = async <T extends Object>(path: string, data: any): Promise<T> => {
-  const response = await axios.post<T>(_endpoint(path), data);
+  const response = await axios.post<T>(_endpoint(path), data, {
+    headers: {
+      'TRON-PRO-API-KEY': await key(),
+    },
+  });
+
   if ('Error' in response.data && typeof response.data.Error === 'string') {
     throw new Error(response.data.Error);
   } else {

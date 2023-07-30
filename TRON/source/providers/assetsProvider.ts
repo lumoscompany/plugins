@@ -1,5 +1,4 @@
 import {
-  Environment,
   AssetsProvider as IAssetsProvider,
   FetchAssetsRequest,
   ComplementaryField,
@@ -9,11 +8,7 @@ import {
 import { tronscan, imageWithAsset } from '../services';
 
 class AssetsProvider implements IAssetsProvider {
-  environment: Environment;
-
-  constructor(environment: Environment) {
-    this.environment = environment;
-  }
+  constructor() {}
 
   async fetch(args: FetchAssetsRequest): Promise<Asset[]> {
     const assets = await tronscan.getAssets({ address: args.address, asset_type: 1 });

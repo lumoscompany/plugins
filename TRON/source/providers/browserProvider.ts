@@ -1,5 +1,4 @@
 import {
-  Environment,
   BrowserProvider as IBrowserProvider,
   BrowserURLRequest,
   BrowserURLResponse,
@@ -7,15 +6,11 @@ import {
 import { trongrid } from '../services';
 
 class BrowserProvider implements IBrowserProvider {
-  environment: Environment;
-
-  constructor(environment: Environment) {
-    this.environment = environment;
-  }
+  constructor() {}
 
   async url(args: BrowserURLRequest): Promise<BrowserURLResponse> {
     let endpoint: string;
-    if (this.environment.testnet) {
+    if (globalEnvironment.isTestnetEnabled) {
       endpoint = `https://shasta.tronscan.org/#`;
     } else {
       endpoint = `https://tronscan.org/#`;
