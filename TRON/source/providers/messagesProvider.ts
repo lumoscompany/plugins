@@ -33,14 +33,14 @@ class MessagesProvider implements IMessagesProvider {
 
     if (transfer.asset === '_') {
       transaction = await trongrid.createTRXTransaction({
-        owner_address: transfer.sender,
+        owner_address: transfer.author.address,
         to_address: transfer.recipient,
         amount: parseInt(transfer.amount),
       });
     } else if (trongrid.isTRONAddress(transfer.asset)) {
       const value = await trongrid.createContractTransaction({
         contract_address: transfer.asset,
-        owner_address: transfer.sender,
+        owner_address: transfer.author.address,
         to_address: transfer.recipient,
         amount: BigInt(transfer.amount),
         fee_limit: 100_000_000,
@@ -50,7 +50,7 @@ class MessagesProvider implements IMessagesProvider {
       estimatedFees = bn(value[1].toString(), 6);
     } else {
       transaction = await trongrid.createAssetTransaction({
-        owner_address: transfer.sender,
+        owner_address: transfer.author.address,
         to_address: transfer.recipient,
         asset_name: transfer.asset,
         amount: parseInt(transfer.amount),
