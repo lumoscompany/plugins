@@ -1,5 +1,7 @@
 import {
   QuickResponseAction,
+  QuickResponseGenerateRequest,
+  QuickResponseGenerateResponse,
   QuickResponseProvider,
   QuickResponseResolveRequest,
   QuickResponseResolveResponse,
@@ -8,8 +10,7 @@ import {
 require('core-js/features/url');
 require('core-js/features/url-search-params');
 
-import { Address, WalletContractV3R2, WalletContractV4 } from 'ton';
-import { ton } from '../services';
+import { Address } from 'ton';
 
 class QRProvider implements QuickResponseProvider {
   constructor() {}
@@ -76,6 +77,20 @@ class QRProvider implements QuickResponseProvider {
     };
 
     return result;
+  }
+
+  async generate(args: QuickResponseGenerateRequest): Promise<QuickResponseGenerateResponse> {
+    if ('transfer' in args.purpose) {
+      const transfer = args.purpose.transfer;
+      let value = `ton://transfer/${Address.parse(transfer.recipient).toString({ urlSafe: true })}`;
+      if (transfer.asset) {
+        value = `${value}?jetton=${Address.parse(transfer.asset.address).toString({
+          urlSafe: true,
+        })}`;
+      }
+      return { value: value };
+    }
+    return { value: undefined };
   }
 }
 
