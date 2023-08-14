@@ -55,7 +55,7 @@ namespace ton {
   export const jsonRPC = new TonClient({
     endpoint: (() => {
       if (globalEnvironment.isTestnetEnabled) {
-        return `https://mainnet.tonhubapi.com/jsonRPC`;
+        return `https://testnet.tonhubapi.com/jsonRPC`;
       } else {
         return `https://mainnet.tonhubapi.com/jsonRPC`;
       }
