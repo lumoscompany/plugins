@@ -83,7 +83,7 @@ class QRProvider implements QuickResponseProvider {
     if ('transfer' in args.purpose) {
       const transfer = args.purpose.transfer;
       let value = `ton://transfer/${Address.parse(transfer.recipient).toString({ urlSafe: true })}`;
-      if (transfer.asset) {
+      if (transfer.asset && transfer.asset.address !== '_') {
         value = `${value}?jetton=${Address.parse(transfer.asset.address).toString({
           urlSafe: true,
         })}`;
