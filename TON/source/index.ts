@@ -1,4 +1,7 @@
-import chainplugin, { Chainplugin as IChainplugin } from '@lumoscompany/chainplugin';
+import chainplugin, {
+  Chainplugin as IChainplugin,
+  QuickResponseProvider,
+} from '@lumoscompany/chainplugin';
 
 import {
   EventsProvider,
@@ -6,6 +9,7 @@ import {
   MessagesProvider,
   BrowserProvider,
   AddressProvider,
+  QRProvider,
 } from './providers';
 
 class TON implements IChainplugin {
@@ -14,8 +18,13 @@ class TON implements IChainplugin {
   private _messages = new MessagesProvider();
   private _browser = new BrowserProvider();
   private _address = new AddressProvider();
+  private _qr = new QRProvider();
 
   constructor() {}
+
+  async qr(): Promise<QuickResponseProvider> {
+    return this._qr;
+  }
 
   async address() {
     return this._address;
