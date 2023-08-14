@@ -14,10 +14,10 @@ const endpoint = (path: string): string => {
   return endpoint;
 };
 
-const headers = (): object => {
-  // const key = await globalEnvironment.readonlyKeyValueStrorage.value('tronscan_api_key');
+const headers = async (): Promise<object> => {
+  const key = await globalEnvironment.readonlyKeyValueStrorage.value('ton_api_key');
   return {
-    Authorization: 'AEDVDE6AV6PJVJIAAAAHVV5FYPNWX3WW2Z6QPFZTZ46PONUL6FDNGETXRF46NPQHDWG7DTQ',
+    Authorization: key,
     accept: 'application/json',
     'Accept-Language': 'en',
   };
@@ -26,7 +26,7 @@ const headers = (): object => {
 const get = async <T extends object>(path: string, data: any): Promise<T> => {
   // const key = await globalEnvironment.readonlyKeyValueStrorage.value('tronscan_api_key');
   const response = await axios.get<T>(endpoint(path), {
-    headers: headers(),
+    headers: await headers(),
     params: data,
   });
 
@@ -40,7 +40,7 @@ const get = async <T extends object>(path: string, data: any): Promise<T> => {
 
 const post = async <T extends object>(path: string, data: any): Promise<T> => {
   const response = await axios.post<T>(endpoint(path), data, {
-    headers: headers(),
+    headers: await headers(),
   });
 
   const value = response.data;
