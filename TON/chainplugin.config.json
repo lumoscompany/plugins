@@ -1,8 +1,9 @@
 {
   "identifier": "com.lumoscompany.plugin.ton",
   "version": "0.1.0",
-  "name": "TON Plugin",
+  "name": "TON",
   "author": "The Lumos Company",
+  "homepage": "https://github.com/lumoscompany/plugins/tree/main/TON",
   "chain": {
     "name": "TON",
     "icon": {
