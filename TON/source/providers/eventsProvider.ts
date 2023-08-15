@@ -263,6 +263,13 @@ const parseJettonTransfer = (
 ): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
 
+  if (action.comment) {
+    complimentary.push({
+      prompt: action.comment,
+      text: { value: '' },
+    });
+  }
+
   let type: EventType;
   let options: CurrencyTextFormattingOptions;
 
@@ -314,6 +321,13 @@ const parseTONTransfer = (
   action: ton.TonTransferAction
 ): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
+
+  if (action.comment) {
+    complimentary.push({
+      prompt: action.comment,
+      text: { value: '' },
+    });
+  }
 
   let type: EventType;
   let options: CurrencyTextFormattingOptions;
