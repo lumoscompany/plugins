@@ -17,7 +17,7 @@ const endpoint = (path: string): string => {
 const headers = async (): Promise<object> => {
   const key = await globalEnvironment.readonlyKeyValueStrorage.value('ton_api_key');
   return {
-    Authorization: key,
+    Authorization: `Bearer ${key}`,
     accept: 'application/json',
     'Accept-Language': 'en',
   };
