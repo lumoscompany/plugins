@@ -1,6 +1,7 @@
 import {
   AddressProvider as IAddressProvider,
   GenerateAddressRequest,
+  ValidateAddressRequest,
   AddressValue,
 } from '@lumoscompany/chainplugin';
 
@@ -30,7 +31,12 @@ class AddressProvider implements IAddressProvider {
     };
   }
 
-  async validate(args: AddressValue): Promise<void> {
+  async validate(args: ValidateAddressRequest): Promise<void> {
+    if (args.purpose && 'transfer' in args.purpose && ton.isDNSAddress(args.address)) {
+      // Allow DNS only for a transfers
+      return;
+    }
+
     Address.parse(args.address);
   }
 }

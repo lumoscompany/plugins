@@ -444,6 +444,23 @@ namespace ton {
 }
 
 namespace ton {
+  export type WalletDNS = {
+    address: string;
+    is_wallet: boolean;
+    has_method_pubkey: boolean;
+    has_method_seqno: boolean;
+    names: string[];
+  };
+
+  export type DNSRecord = {
+    wallet?: WalletDNS;
+    next_resolver?: string;
+    sites: string[];
+    storage?: string;
+  };
+}
+
+namespace ton {
   export type GetAccountEventsRequest = {
     address: string;
     subject_only: boolean;
@@ -550,6 +567,40 @@ namespace ton {
     return post<AccountEvent>(`accounts/${args.address}/events/emulate`, {
       boc: args.boc,
     });
+  }
+}
+
+namespace ton {
+  export const isDNSAddress = (value: string): boolean => {
+    const ton = value.match(/\.ton$/);
+    const tme = value.match(/\.t\.me$/);
+
+    if (ton || tme) {
+      return true;
+    }
+
+    return false;
+  };
+
+  export type ResolveDNSAddressRequest = {
+    address: string;
+  };
+
+  export async function resolve(args: ResolveDNSAddressRequest): Promise<string | undefined> {
+    if (!isDNSAddress(args.address)) {
+      return undefined;
+    }
+
+    try {
+      const value = await get<DNSRecord>(`dns/${args.address}/resolve`, {});
+      if (value.wallet) {
+        return value.wallet.address;
+      } else {
+        return undefined;
+      }
+    } catch {
+      return undefined;
+    }
   }
 }
 

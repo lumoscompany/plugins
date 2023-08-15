@@ -38,7 +38,18 @@ class MessagesProvider implements IMessagesProvider {
 
   async bake(args: BakeMessageRequest): Promise<BakedMessageData> {
     const transfer = args.message.transfer;
+
     const author = transfer.author;
+    let recipient = transfer.recipient;
+
+    if (ton.isDNSAddress(recipient)) {
+      const resolvedDNS = await ton.resolve({ address: recipient });
+      if (resolvedDNS) {
+        recipient = resolvedDNS;
+      } else {
+        throw new PluginError(0, `Can't resolve ${recipient} doamin`);
+      }
+    }
 
     const wallet = getWalletContract(author);
     if (!wallet) {
@@ -62,7 +73,7 @@ class MessagesProvider implements IMessagesProvider {
 
       imessages.push(
         internal({
-          to: Address.parse(transfer.recipient),
+          to: Address.parse(recipient),
           value: amount,
         })
       );
@@ -86,7 +97,7 @@ class MessagesProvider implements IMessagesProvider {
           value: amount,
           body: this.jettonTransferBody({
             jettonAmount: BigInt(transfer.amount),
-            toAddress: Address.parse(transfer.recipient),
+            toAddress: Address.parse(recipient),
             responseAddress: Address.parse(transfer.author.address),
             forwardAmount: BigInt(1),
           }),
@@ -177,10 +188,10 @@ class MessagesProvider implements IMessagesProvider {
 
   private async resolveJettonAddressFor(
     jettonMasterAddress: Address,
-    recipientAddress: Address
+    userContractAddress: Address
   ): Promise<Address | undefined> {
     let waletAddress = await this.client.runMethod(jettonMasterAddress, 'get_wallet_address', [
-      { type: 'slice', cell: beginCell().storeAddress(recipientAddress).endCell() },
+      { type: 'slice', cell: beginCell().storeAddress(userContractAddress).endCell() },
     ]);
 
     try {
