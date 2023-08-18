@@ -1,7 +1,7 @@
 import { PluginError } from '@lumoscompany/chainplugin';
 import { BlockscoutNetwork } from '../types';
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 type TokenBalance = {
   value: string;
@@ -170,12 +170,28 @@ class API {
     }
   }
 
-  async getAddress(args: { address: string }): Promise<Address> {
-    return this._get<Address>(`/v2/addresses/${args.address}`, {});
+  async getAddress(args: { address: string }): Promise<Address | undefined> {
+    try {
+      return await this._get<Address>(`/v2/addresses/${args.address}`, {});
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status == 404) {
+        return undefined;
+      } else {
+        throw e;
+      }
+    }
   }
 
   async getTokenBalances(args: { address: string }): Promise<TokenBalance[]> {
-    return this._get<TokenBalance[]>(`/v2/addresses/${args.address}/token-balances`, {});
+    try {
+      return await this._get<TokenBalance[]>(`/v2/addresses/${args.address}/token-balances`, {});
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status == 404) {
+        return [];
+      } else {
+        throw e;
+      }
+    }
   }
 
   async getTransactions(args: {
@@ -193,17 +209,29 @@ class API {
       parameters['index'] = args.next_page_params.index;
     }
 
-    return this._get<NextPageResponse<Transaction>>(
-      `/v2/addresses/${args.address}/transactions`,
-      parameters
-    );
+    try {
+      return await this._get<NextPageResponse<Transaction>>(
+        `/v2/addresses/${args.address}/transactions`,
+        parameters
+      );
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status == 404) {
+        return { items: [] } as NextPageResponse<Transaction>;
+      } else {
+        throw e;
+      }
+    }
   }
 
   async getTransaction(args: { hash: string }): Promise<Transaction | undefined> {
     try {
       return await this._get<Transaction>(`/v2/transactions/${args.hash}`, {});
-    } catch {
-      return undefined;
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status == 404) {
+        return undefined;
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -224,10 +252,18 @@ class API {
       parameters['index'] = args.next_page_params.index;
     }
 
-    return this._get<NextPageResponse<TokenTransfer>>(
-      `/v2/addresses/${args.address}/token-transfers`,
-      parameters
-    );
+    try {
+      return await this._get<NextPageResponse<TokenTransfer>>(
+        `/v2/addresses/${args.address}/token-transfers`,
+        parameters
+      );
+    } catch (e) {
+      if (e instanceof AxiosError && e.response?.status == 404) {
+        return { items: [] } as NextPageResponse<TokenTransfer>;
+      } else {
+        throw e;
+      }
+    }
   }
 
   private async _get<T extends object>(path: string, data: any): Promise<T> {

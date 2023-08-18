@@ -5,6 +5,21 @@ import { bn, calculateTotalPrice } from '../utilites';
 
 export const fetchNativeToken = async (args: { api: API; address: string }): Promise<Asset> => {
   const address = await args.api.getAddress({ address: args.address });
+  if (!address) {
+    return {
+      name: args.api.network.token.symbol,
+      icon: args.api.network.token.image,
+      quantity: bn('0', args.api.network.token.decimals),
+      decimals: args.api.network.token.decimals,
+      address: '_',
+      type: 'fungible',
+      malicious: false,
+      preview: {
+        significant: {},
+        complementary: [],
+      },
+    };
+  }
 
   const fields: ComplementaryField[] = [];
   const quantity = address.coin_balance ?? '';
