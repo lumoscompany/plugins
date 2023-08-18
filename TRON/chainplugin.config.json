@@ -13,11 +13,13 @@
     },
     "signingProtocol": {
       "algorithm": {
-        "secp256k1": {},
-        "messageSigningPrefix": {
-          "firstByte": 25,
-          "prefixText": "TRON Signed Message:\n",
-          "hashingFunction": "keccak256"
+        "secp256k1": {}
+      },
+      "messageSigningPrefix": {
+        "firstByte": 25,
+        "prefixText": "TRON Signed Message:\n",
+        "hashingFunction": {
+          "keccak256": {}
         }
       }
     },

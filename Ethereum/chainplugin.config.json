@@ -1,0 +1,45 @@
+{
+  "identifier": "com.lumoscompany.plugin.ethereum",
+  "version": "0.1.0",
+  "name": "Ethereum",
+  "author": "The Lumos Company",
+  "homepage": "https://github.com/lumoscompany/plugins/tree/main/Ethereum",
+  "chain": {
+    "name": "Ethereum",
+    "icon": {
+      "svg": {
+        "rawValue": "PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxjaXJjbGUgY3g9IjQ4IiBjeT0iNDgiIHI9IjQ4IiBmaWxsPSIjRURGMEY0Ii8+DQo8cGF0aCBkPSJNNDcuODY3OSAxOS4xOTk3TDQ3LjQ4NjEgMjAuNDk2N1Y1OC4xMzAxTDQ3Ljg2NzkgNTguNTExTDY1LjMzNjYgNDguMTg1Mkw0Ny44Njc5IDE5LjE5OTdaIiBmaWxsPSIjMzQzNDM0Ii8+DQo8cGF0aCBkPSJNNDcuODY3NSAxOS4yMDE3TDMwLjM5ODQgNDguMTg3MUw0Ny44Njc1IDU4LjUxM1Y0MC4yNDY4VjE5LjIwMTdaIiBmaWxsPSIjOEM4QzhDIi8+DQo8cGF0aCBkPSJNNDcuODY3MyA2MS44MTcxTDQ3LjY1MjEgNjIuMDc5NVY3NS40ODUxTDQ3Ljg2NzMgNzYuMTEzM0w2NS4zNDY2IDUxLjQ5NjZMNDcuODY3MyA2MS44MTcxWiIgZmlsbD0iIzNDM0MzQiIvPg0KPHBhdGggZD0iTTQ3Ljg2NzUgNzYuMTEzM1Y2MS44MTcxTDMwLjM5ODQgNTEuNDk2Nkw0Ny44Njc1IDc2LjExMzNaIiBmaWxsPSIjOEM4QzhDIi8+DQo8cGF0aCBkPSJNNDcuODY2NyA1OC41MTA4TDY1LjMzNTMgNDguMTg1TDQ3Ljg2NjcgNDAuMjQ0NlY1OC41MTA4WiIgZmlsbD0iIzE0MTQxNCIvPg0KPHBhdGggZD0iTTMwLjM5ODQgNDguMTg1TDQ3Ljg2NzUgNTguNTEwOFY0MC4yNDQ2TDMwLjM5ODQgNDguMTg1WiIgZmlsbD0iIzM5MzkzOSIvPg0KPC9zdmc+DQo="
+      }
+    },
+    "signingProtocol": {
+      "algorithm": {
+        "secp256k1": {}
+      },
+      "messageSigningPrefix": {
+        "firstByte": 25,
+        "prefixText": "Ethereum Signed Message:\n",
+        "hashingFunction": {
+          "keccak256": {}
+        }
+      }
+    },
+    "addressFormatting": "evm",
+    "b32": {},
+    "b39": {
+      "words": 12,
+      "algorithm": [
+        {
+          "pkcs5": {
+            "salt": "mnemonic",
+            "password": "",
+            "iterations": 2048,
+            "klength": 64
+          }
+        }
+      ]
+    },
+    "b44": {
+      "coin": "60`"
+    }
+  }
+}
