@@ -45,7 +45,8 @@ const parseTRC20TRC721Transfer = (
 ): [EventPreview, EventType] => {
   type _data = [string, string, EventType, string];
   const [_address, _amount, _type, _title]: _data = (() => {
-    const value = bn(transfer.quant, transfer.tokenInfo.tokenDecimal);
+    const amount = transfer.quant || '0';
+    const value = bn(amount, transfer.tokenInfo.tokenDecimal);
     if (address === transfer.from_address) {
       return [transfer.to_address, `${value}`, 'outcome-transaction', 'Receipt'];
     } else {
@@ -84,7 +85,8 @@ const parseTRC10Transfer = (
 ): [EventPreview, EventType] => {
   type _data = [string, string, EventType, string];
   const [_address, _amount, _type, _title]: _data = (() => {
-    const value = bn(transfer.amount, transfer.tokenInfo.tokenDecimal);
+    const amount = transfer.amount || '0';
+    const value = bn(amount, transfer.tokenInfo.tokenDecimal);
     if (address === transfer.transferFromAddress) {
       return [transfer.transferToAddress, `${value}`, 'outcome-transaction', 'Receipt'];
     } else {
