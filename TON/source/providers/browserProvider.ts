@@ -23,7 +23,7 @@ class BrowserProvider implements IBrowserProvider {
       if (args.asset.address === '_') {
         return { url: `${endpoint}` };
       } else {
-        return { url: `${endpoint}/${ton.addressFromRaw(args.asset.address)}` };
+        return { url: `${endpoint}/${ton.addressFromRaw(args.asset.address, false)}` };
       }
     } else {
       return {};

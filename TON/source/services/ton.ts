@@ -70,11 +70,11 @@ namespace ton {
     },
   };
 
-  export const addressFromRaw = (string: string | undefined): string => {
+  export const addressFromRaw = (string: string | undefined, isuser: boolean): string => {
     if (!string) {
       return '';
     }
-    return Address.parse(string).toString({ urlSafe: true });
+    return Address.parse(string).toString({ urlSafe: true, bounceable: !isuser });
   };
 }
 

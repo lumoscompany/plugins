@@ -27,7 +27,7 @@ class AddressProvider implements IAddressProvider {
     }
 
     return {
-      address: address.toString({ urlSafe: true }),
+      address: address.toString({ urlSafe: true, bounceable: false }),
     };
   }
 

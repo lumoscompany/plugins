@@ -74,7 +74,7 @@ class AssetsProvider implements IAssetsProvider {
 
     const rates = await ton.getRates({
       tokens: ['TON'].concat(
-        jettons.balances.map(balance => ton.addressFromRaw(balance.jetton.address))
+        jettons.balances.map(balance => ton.addressFromRaw(balance.jetton.address, false))
       ),
       currencies: ['USD'],
     });
@@ -82,7 +82,7 @@ class AssetsProvider implements IAssetsProvider {
     const native = await this.fetchNativeAsset(args, rates.rates['TON'].prices['USD']);
     const tokens = jettons.balances.map(balance => {
       const jetton = balance.jetton;
-      const friendlyAddress = ton.addressFromRaw(jetton.address);
+      const friendlyAddress = ton.addressFromRaw(jetton.address, false);
 
       const price = rates.rates[friendlyAddress].prices['USD'];
       const token_price_in_usd = price || 0;

@@ -17,6 +17,7 @@ import {
 } from '@lumoscompany/chainplugin';
 
 import { ton, bn } from '../services';
+import { Address } from 'ton-core';
 
 type ActionParseResult = {
   images: Image[];
@@ -28,7 +29,7 @@ type ActionParseResult = {
 };
 
 const parseSubscribe = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.SubscriptionAction
 ): ActionParseResult => {
   return {
@@ -44,7 +45,7 @@ const parseSubscribe = (
       {
         name: 'Beneficiary',
         text: {
-          value: ton.addressFromRaw(action.beneficiary.address),
+          value: ton.addressFromRaw(action.beneficiary.address, false),
           copyable: true,
         },
       },
@@ -62,7 +63,7 @@ const parseSubscribe = (
 };
 
 const parseUnsubscribe = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.UnSubscriptionAction
 ): ActionParseResult => {
   return {
@@ -78,7 +79,7 @@ const parseUnsubscribe = (
       {
         name: 'Beneficiary',
         text: {
-          value: ton.addressFromRaw(action.beneficiary.address),
+          value: ton.addressFromRaw(action.beneficiary.address, false),
           copyable: true,
         },
       },
@@ -129,7 +130,7 @@ const parseDepositStake = (
 };
 
 const parseRecoverStake = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.RecoverStakeAction
 ): ActionParseResult => {
   return {
@@ -148,7 +149,7 @@ const parseRecoverStake = (
 };
 
 const parseSmartContractExecution = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.SmartContractAction
 ): ActionParseResult => {
   return {
@@ -157,7 +158,7 @@ const parseSmartContractExecution = (
       {
         name: 'Contract Address',
         text: {
-          value: ton.addressFromRaw(action.contract.address),
+          value: ton.addressFromRaw(action.contract.address, false),
           copyable: true,
         },
       },
@@ -175,7 +176,7 @@ const parseSmartContractExecution = (
 };
 
 const parseContractDeploy = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.ContractDeployAction
 ): ActionParseResult => {
   return {
@@ -184,7 +185,7 @@ const parseContractDeploy = (
       {
         name: 'Address',
         text: {
-          value: ton.addressFromRaw(action.address),
+          value: ton.addressFromRaw(action.address, true),
           copyable: true,
         },
       },
@@ -202,14 +203,14 @@ const parseContractDeploy = (
 };
 
 const parseNFTItemTransfer = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.NftItemTransferAction
 ): ActionParseResult => {
   return undefined;
 };
 
 const parseJettonSwap = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.JettonSwapAction
 ): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
@@ -240,7 +241,7 @@ const parseJettonSwap = (
       {
         name: 'Router',
         text: {
-          value: ton.addressFromRaw(action.router.address),
+          value: ton.addressFromRaw(action.router.address, false),
           copyable: true,
         },
       },
@@ -258,7 +259,7 @@ const parseJettonSwap = (
 };
 
 const parseJettonTransfer = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.JettonTransferAction
 ): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
@@ -273,13 +274,13 @@ const parseJettonTransfer = (
   let type: EventType;
   let options: CurrencyTextFormattingOptions;
 
-  if (ton.addressFromRaw(action.sender?.address) === address) {
+  if (action.sender?.address === rawaddress) {
     options = CurrencyTextFormattingOptions.NEGATIVE;
     type = 'outcome-transaction';
     complimentary.push({
       name: 'Recipient',
       text: {
-        value: ton.addressFromRaw(action.recipient?.address),
+        value: ton.addressFromRaw(action.recipient?.address, true),
         copyable: true,
       },
     });
@@ -289,7 +290,7 @@ const parseJettonTransfer = (
     complimentary.push({
       name: 'Sender',
       text: {
-        value: ton.addressFromRaw(action.sender?.address),
+        value: ton.addressFromRaw(action.sender?.address, true),
         copyable: true,
       },
     });
@@ -317,7 +318,7 @@ const parseJettonTransfer = (
 };
 
 const parseTONTransfer = (
-  address: AccountAddress,
+  rawaddress: string,
   action: ton.TonTransferAction
 ): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
@@ -332,13 +333,13 @@ const parseTONTransfer = (
   let type: EventType;
   let options: CurrencyTextFormattingOptions;
 
-  if (ton.addressFromRaw(action.sender.address) === address) {
+  if (action.sender.address === rawaddress) {
     options = CurrencyTextFormattingOptions.NEGATIVE;
     type = 'outcome-transaction';
     complimentary.push({
       name: 'Recipient',
       text: {
-        value: ton.addressFromRaw(action.recipient.address),
+        value: ton.addressFromRaw(action.recipient.address, true),
         copyable: true,
       },
     });
@@ -348,7 +349,7 @@ const parseTONTransfer = (
     complimentary.push({
       name: 'Sender',
       text: {
-        value: ton.addressFromRaw(action.sender.address),
+        value: ton.addressFromRaw(action.sender.address, true),
         copyable: true,
       },
     });
@@ -377,34 +378,35 @@ const parseTONTransfer = (
 
 const parse = (address: AccountAddress, action: ton.AccountEvent): Event[] => {
   const result: Event[] = [];
-  let index = 0;
+  const rawaddress = Address.parse(address).toRawString();
 
+  let index = 0;
   action.actions.forEach(a => {
     let parsed: ActionParseResult | undefined = undefined;
     if (a.TonTransfer) {
-      parsed = parseTONTransfer(address, a.TonTransfer);
+      parsed = parseTONTransfer(rawaddress, a.TonTransfer);
     } else if (a.JettonTransfer) {
-      parsed = parseJettonTransfer(address, a.JettonTransfer);
+      parsed = parseJettonTransfer(rawaddress, a.JettonTransfer);
     } else if (a.JettonSwap) {
-      parsed = parseJettonSwap(address, a.JettonSwap);
+      parsed = parseJettonSwap(rawaddress, a.JettonSwap);
     } else if (a.NftItemTransfer) {
-      parsed = parseNFTItemTransfer(address, a.NftItemTransfer);
+      parsed = parseNFTItemTransfer(rawaddress, a.NftItemTransfer);
     } else if (a.ContractDeploy) {
-      parsed = parseContractDeploy(address, a.ContractDeploy);
+      parsed = parseContractDeploy(rawaddress, a.ContractDeploy);
     } else if (a.Subscribe) {
-      parsed = parseSubscribe(address, a.Subscribe);
+      parsed = parseSubscribe(rawaddress, a.Subscribe);
     } else if (a.UnSubscribe) {
-      parsed = parseUnsubscribe(address, a.UnSubscribe);
+      parsed = parseUnsubscribe(rawaddress, a.UnSubscribe);
     } else if (a.AuctionBid) {
-      parsed = parseAuctionBid(address, a.AuctionBid);
+      parsed = parseAuctionBid(rawaddress, a.AuctionBid);
     } else if (a.NftPurchase) {
-      parsed = parseNFTPurchase(address, a.NftPurchase);
+      parsed = parseNFTPurchase(rawaddress, a.NftPurchase);
     } else if (a.DepositStake) {
-      parsed = parseDepositStake(address, a.DepositStake);
+      parsed = parseDepositStake(rawaddress, a.DepositStake);
     } else if (a.RecoverStake) {
-      parsed = parseRecoverStake(address, a.RecoverStake);
+      parsed = parseRecoverStake(rawaddress, a.RecoverStake);
     } else if (a.SmartContractExec) {
-      parsed = parseSmartContractExecution(address, a.SmartContractExec);
+      parsed = parseSmartContractExecution(rawaddress, a.SmartContractExec);
     }
 
     if (!parsed) {
