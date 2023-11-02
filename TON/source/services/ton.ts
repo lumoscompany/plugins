@@ -265,11 +265,11 @@ namespace ton {
     user_wallet: AccountAddress;
     router: AccountAddress;
 
-    jetton_wallet_in: string;
-    jetton_master_in: JettonPreview;
+    ton_in?: number; // Int64
+    ton_out?: number; // Int64
 
-    jetton_wallet_out: string;
-    jetton_master_out: JettonPreview;
+    jetton_master_in?: JettonPreview;
+    jetton_master_out?: JettonPreview;
   };
 }
 

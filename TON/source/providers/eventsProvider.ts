@@ -213,48 +213,96 @@ const parseJettonSwap = (
   rawaddress: string,
   action: ton.JettonSwapAction
 ): ActionParseResult => {
+  var asset: AssetAddress;
+  var text: FormattedText;
+
+  const images: Image[] = [];
   const complimentary: ComplementaryField[] = [];
-  return {
-    images: [
-      {
-        url: {
-          string: action.jetton_master_in.image,
+
+  if (action.jetton_master_in) {
+    asset = action.jetton_master_in.address;
+    images.push({
+      url: { string: action.jetton_master_in.image },
+    });
+  } else if (action.ton_in) {
+    asset = '_';
+    images.push(ton.TONAssetImage);
+  } else {
+    return undefined;
+  }
+
+  if (action.jetton_master_out) {
+    asset = `${asset}#~#${action.jetton_master_out.address}`;
+    images.push({
+      url: { string: action.jetton_master_out.image },
+    });
+  } else if (action.ton_out) {
+    asset = `${asset}#~#_`;
+    images.push(ton.TONAssetImage);
+  } else {
+    return undefined;
+  }
+
+  if (action.jetton_master_out && action.amount_out) {
+    complimentary.push({
+      name: 'Spended',
+      text: {
+        value: bn(`${action.amount_out}`, action.jetton_master_out.decimals),
+        currency: {
+          abbreviation: action.jetton_master_out.symbol,
+          options: CurrencyTextFormattingOptions.NEGATIVE,
         },
       },
-      {
-        url: {
-          string: action.jetton_master_out.image,
+    });
+  } else if (action.ton_out) {
+    complimentary.push({
+      name: 'Spended',
+      text: {
+        value: bn(`${action.ton_out}`, 9),
+        currency: {
+          abbreviation: 'TON',
+          options: CurrencyTextFormattingOptions.NEGATIVE,
         },
       },
-    ],
-    complimentary: [
-      {
-        name: 'Spended',
-        text: {
-          value: bn(`${action.amount_out}`, action.jetton_master_out.decimals),
-          currency: {
-            abbreviation: action.jetton_master_out.symbol,
-            options: CurrencyTextFormattingOptions.NEGATIVE,
-          },
-        },
-      },
-      {
-        name: 'Router',
-        text: {
-          value: ton.addressFromRaw(action.router.address, false),
-          copyable: true,
-        },
-      },
-    ],
+    });
+  } else {
+    return undefined;
+  }
+
+  complimentary.push({
+    name: 'Router',
     text: {
+      value: ton.addressFromRaw(action.router.address, false),
+      copyable: true,
+    },
+  });
+
+  if (action.jetton_master_in && action.amount_in) {
+    text = {
       value: bn(`${action.amount_in}`, action.jetton_master_in.decimals),
       currency: {
         abbreviation: action.jetton_master_in.symbol,
         options: CurrencyTextFormattingOptions.POSITIVE,
       },
-    },
+    };
+  } else if (action.ton_in) {
+    text = {
+      value: bn(`${action.ton_in}`, 9),
+      currency: {
+        abbreviation: 'TON',
+        options: CurrencyTextFormattingOptions.POSITIVE,
+      },
+    };
+  } else {
+    return undefined;
+  }
+
+  return {
+    images: images,
+    complimentary: complimentary,
+    text: text,
     type: 'Jetton Swap',
-    asset: `${action.jetton_master_in.address}#~#${action.jetton_master_out.address}`,
+    asset: asset,
   };
 };
 
