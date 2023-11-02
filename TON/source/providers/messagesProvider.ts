@@ -146,7 +146,7 @@ class MessagesProvider implements IMessagesProvider {
         })(),
       });
 
-      estimatedFees = BigInt(Math.abs(estimatedAction.extra)) - amount;
+      estimatedFees = BigInt(Math.abs(estimatedAction.extra));
     } catch {}
 
     if (amount + estimatedFees > balance) {
