@@ -136,7 +136,7 @@ class MessagesProvider implements IMessagesProvider {
     try {
       const estimatedSignature = Buffer.alloc(64);
       const estimatedAction = await ton.emulate({
-        address: transfer.author.address,
+        address: wallet.address.toRawString(),
         boc: (() => {
           const body = beginCell().storeBuffer(estimatedSignature).storeBuilder(emessage).endCell();
           const ext = external({
