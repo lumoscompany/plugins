@@ -564,9 +564,12 @@ namespace ton {
   };
 
   export async function emulate(args: EmulateEventRequest): Promise<AccountEvent> {
-    return post<AccountEvent>(`accounts/${args.address}/events/emulate`, {
-      boc: args.boc,
-    });
+    return post<AccountEvent>(
+      `accounts/${args.address}/events/emulate?ignore_signature_check=true`,
+      {
+        boc: args.boc,
+      }
+    );
   }
 }
 
