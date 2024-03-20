@@ -455,6 +455,7 @@ const parse = (address: AccountAddress, action: ton.AccountEvent): Event[] => {
     let status: EventStatus;
     if (action.in_progress) {
       status = 'pending';
+      return; // ignore pending events for tmp
     } else if (a.status === 'failed') {
       status = 'error';
     } else {
