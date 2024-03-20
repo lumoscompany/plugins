@@ -70,7 +70,7 @@ class QRProvider implements QuickResponseProvider {
 
     result.action = {
       transfer: {
-        recipient: address.toString(),
+        recipient: address.toString({ urlSafe: true, bounceable: false }),
         asset: asset,
         amount: amount,
       },
