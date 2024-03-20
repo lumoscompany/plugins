@@ -40,15 +40,26 @@ class MessagesProvider implements IMessagesProvider {
     const transfer = args.message.transfer;
 
     const author = transfer.author;
-    let recipient = transfer.recipient;
+    let recipient: Address;
+    let bounce: boolean = true;
 
-    if (ton.isDNSAddress(recipient)) {
-      const resolvedDNS = await ton.resolve({ address: recipient });
+    if (ton.isDNSAddress(transfer.recipient)) {
+      const resolvedDNS = await ton.resolve({ address: transfer.recipient });
       if (resolvedDNS) {
-        recipient = resolvedDNS;
+        recipient = Address.parse(resolvedDNS);
+        bounce = false;
       } else {
         throw new PluginError(0, `Can't resolve ${recipient} doamin`);
       }
+    } else if (Address.isRaw(transfer.recipient)) {
+      recipient = Address.parseRaw(transfer.recipient);
+      bounce = false;
+    } else if (Address.isFriendly(transfer.recipient)) {
+      const parsed = Address.parseFriendly(transfer.recipient);
+      recipient = parsed.address;
+      bounce = parsed.isBounceable;
+    } else {
+      throw new PluginError(0, 'Invalid address');
     }
 
     const wallet = getWalletContract(author);
@@ -73,8 +84,9 @@ class MessagesProvider implements IMessagesProvider {
 
       imessages.push(
         internal({
-          to: Address.parse(recipient),
+          to: recipient,
           value: amount,
+          bounce,
         })
       );
     } else {
@@ -97,7 +109,7 @@ class MessagesProvider implements IMessagesProvider {
           value: amount,
           body: this.jettonTransferBody({
             jettonAmount: BigInt(transfer.amount),
-            toAddress: Address.parse(recipient),
+            toAddress: recipient,
             responseAddress: Address.parse(transfer.author.address),
             forwardAmount: BigInt(1),
           }),
