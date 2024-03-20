@@ -72,16 +72,14 @@ class MessagesProvider implements IMessagesProvider {
 
     const balance = await contract.getBalance();
     const seqno = await contract.getSeqno();
+    const sendmode: SendMode = SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS;
 
-    let sendmode: SendMode;
     let amount: bigint;
 
     const imessages: MessageRelaxed[] = [];
 
     if (transfer.asset === '_') {
-      sendmode = SendMode.PAY_GAS_SEPARATELY;
       amount = BigInt(transfer.amount);
-
       imessages.push(
         internal({
           to: recipient,
@@ -90,9 +88,7 @@ class MessagesProvider implements IMessagesProvider {
         })
       );
     } else {
-      sendmode = SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS;
       amount = BigInt(640_000_000); // for a gas and etc.
-
       const authorJettonContractAddress = await this.resolveJettonAddressFor(
         Address.parse(transfer.asset),
         Address.parse(transfer.author.address)
