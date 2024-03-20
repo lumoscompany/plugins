@@ -1,5 +1,5 @@
 import { MessageAuthor } from '@lumoscompany/chainplugin';
-import { WalletContractV3R2, WalletContractV4 } from 'ton';
+import { WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import { bn } from 'tlc-utilites';
 import {
   Address,
@@ -8,7 +8,7 @@ import {
   storeMessageRelaxed,
   SendMode,
   Builder,
-} from 'ton-core';
+} from '@ton/core';
 
 export function defaults<T extends object>(relaxed: T, defaults: Partial<T>): T {
   const _defaults = defaults;

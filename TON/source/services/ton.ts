@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 import { PluginError } from '@lumoscompany/chainplugin';
-import { Address } from 'ton-core';
-import { TonClient } from 'ton';
+import { Address } from '@ton/core';
+import { TonClient } from '@ton/ton';
 
 const endpoint = (path: string): string => {
   let endpoint: string;

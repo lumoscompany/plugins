@@ -21,7 +21,7 @@ import {
   Address,
   external,
   storeMessage,
-} from 'ton';
+} from '@ton/ton';
 
 import {
   createWalletTransferV3SigningMessage,

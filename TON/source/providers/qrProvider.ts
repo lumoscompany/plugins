@@ -11,7 +11,7 @@ import {
 require('core-js/features/url');
 require('core-js/features/url-search-params');
 
-import { Address } from 'ton';
+import { Address } from '@ton/core';
 
 class QRProvider implements QuickResponseProvider {
   constructor() {}

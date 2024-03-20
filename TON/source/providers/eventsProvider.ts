@@ -17,7 +17,7 @@ import {
 } from '@lumoscompany/chainplugin';
 
 import { ton, bn } from '../services';
-import { Address } from 'ton-core';
+import { Address } from '@ton/core';
 
 type ActionParseResult = {
   images: Image[];
@@ -28,10 +28,7 @@ type ActionParseResult = {
   asset: AssetAddress;
 };
 
-const parseSubscribe = (
-  rawaddress: string,
-  action: ton.SubscriptionAction
-): ActionParseResult => {
+const parseSubscribe = (rawaddress: string, action: ton.SubscriptionAction): ActionParseResult => {
   return {
     images: [ton.TONAssetImage],
     complimentary: [
@@ -209,10 +206,7 @@ const parseNFTItemTransfer = (
   return undefined;
 };
 
-const parseJettonSwap = (
-  rawaddress: string,
-  action: ton.JettonSwapAction
-): ActionParseResult => {
+const parseJettonSwap = (rawaddress: string, action: ton.JettonSwapAction): ActionParseResult => {
   var asset: AssetAddress;
   var text: FormattedText;
 
@@ -365,10 +359,7 @@ const parseJettonTransfer = (
   };
 };
 
-const parseTONTransfer = (
-  rawaddress: string,
-  action: ton.TonTransferAction
-): ActionParseResult => {
+const parseTONTransfer = (rawaddress: string, action: ton.TonTransferAction): ActionParseResult => {
   const complimentary: ComplementaryField[] = [];
 
   if (action.comment) {

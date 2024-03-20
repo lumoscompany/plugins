@@ -5,7 +5,7 @@ import {
   AddressValue,
 } from '@lumoscompany/chainplugin';
 
-import { Address, WalletContractV3R2, WalletContractV4 } from 'ton';
+import { Address, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import { ton } from '../services';
 
 class AddressProvider implements IAddressProvider {
